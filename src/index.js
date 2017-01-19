@@ -4,7 +4,7 @@ function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export default class Model {
+export class Model {
     constructor(attributes, withSetters) {
         this.attributes = {};
         this.url = '';
