@@ -25,7 +25,7 @@ const task = {
     run('mocha src/*.test.js --compilers js:firenpm/babel-register')
   },
   'publish': () => {
-    task['test']()
+  task['build']()
     run('npm publish')
   }
 }

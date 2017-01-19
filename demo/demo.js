@@ -1,8 +1,8 @@
 var Model = require('../index.js');
-
+/*
 Model.get baseUrl() = function () {
     return 'https://jsonplaceholder.typicode.com';
-}
+}*/
 
 class Comments extends Model{
     constructor(attributes, withSetters) {
