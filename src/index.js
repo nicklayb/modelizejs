@@ -240,3 +240,4 @@ export class Model {
         return 'id';
     }
 }
+module.exports = Model;
