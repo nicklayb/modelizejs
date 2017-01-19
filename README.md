@@ -1,4 +1,4 @@
-# modeljs
+# modelizejs
 ###### By Nicolas Boisvert :: nicklay@me.com
 
 ### Javascript model library Eloquent-like oriented using Axios for fetch request
@@ -14,7 +14,7 @@ Feel to make pull request and make suggestions
 You can have look in *Demo* for more information. This example will use the JSONPlaceholder API for testing.
 
 ```js
-var Model = require('modeljs');
+var Model = require('modelizejs');
 
 class Users extends Model {
     //  Required for the construction
