@@ -1,45 +1,44 @@
 {
-    "name": "modelizejs",
-    "version": "1.0.1",
-    "description": "Javascript model library Eloquent-like oriented using Axios for fetch request",
-    "main": "lib/index.js",
-    "author": "",
-    "license": "MIT",
-    "scripts": {
-        "test": "run test"
-    },
-    "dependencies": {
-        "axios": "^0.15.3"
-    },
-    "devDependencies": {
-        "firenpm": "1.2.0"
-    },
-    "babel": {
-        "presets": [
-            "firenpm/babel-preset-es2015",
-            "firenpm/babel-preset-react",
-            "firenpm/babel-preset-stage-2"
-        ]
-    },
-    "runjs": {
-        "babel-register": "./node_modules/firenpm/babel-register"
-    },
-    "eslintConfig": {
-        "extends": [
-            "./node_modules/firenpm/eslint-config-standard.js",
-            "./node_modules/firenpm/eslint-config-standard-react.js"
-        ],
-        "parser": "./node_modules/firenpm/babel-eslint"
-    },
-    "keywords": [
-        "model",
-        "javascript",
-        "axios",
-        "eloquent"
+  "name": "modelizejs",
+  "version": "1.0.2",
+  "description": "Javascript model library Eloquent-like oriented using Axios for fetch request",
+  "main": "lib/index.js",
+  "author": "Nicolas Boisvert (nicklay@me.com)",
+  "license": "MIT",
+  "scripts": {
+    "test": "run test"
+  },
+  "dependencies": {
+    "axios": "^0.15.3"
+  },
+  "devDependencies": {
+    "firenpm": "1.2.0"
+  },
+  "babel": {
+    "presets": [
+      "firenpm/babel-preset-es2015",
+      "firenpm/babel-preset-react",
+      "firenpm/babel-preset-stage-2"
+    ]
+  },
+  "runjs": {
+    "babel-register": "./node_modules/firenpm/babel-register"
+  },
+  "eslintConfig": {
+    "extends": [
+      "./node_modules/firenpm/eslint-config-standard.js",
+      "./node_modules/firenpm/eslint-config-standard-react.js"
     ],
-    "author": "Nicolas Boisvert (nicklay@me.com)",
-    "bugs": {
-        "url": "https://github.com/nicklayb/modelizejs/issues"
-    },
-    "homepage": "https://github.com/nicklayb/modelizejs#readme"
+    "parser": "./node_modules/firenpm/babel-eslint"
+  },
+  "keywords": [
+    "model",
+    "javascript",
+    "axios",
+    "eloquent"
+  ],
+  "bugs": {
+    "url": "https://github.com/nicklayb/modelizejs/issues"
+  },
+  "homepage": "https://github.com/nicklayb/modelizejs#readme"
 }
