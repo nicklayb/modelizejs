@@ -1,6 +1,6 @@
 {
   "name": "modelizejs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Javascript model library Eloquent-like oriented using Axios for fetch request",
   "main": "lib/index.js",
   "author": "Nicolas Boisvert (nicklay@me.com)",
