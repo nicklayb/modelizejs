@@ -1,15 +1,8 @@
 var Model = require('../index.js');
-/*
-Model.get baseUrl() = function () {
-    return 'https://jsonplaceholder.typicode.com';
-}*/
 
-class Comments extends Model{
-    constructor(attributes, withSetters) {
-        super(attributes, withSetters);
-        this.setUrl('comments');
-    }
-}
+Model.getBaseUrl = () => {
+    return 'https://jsonplaceholder.typicode.com';
+};
 
 class Posts extends Model {
     constructor(attributes, withSetters) {
@@ -32,7 +25,7 @@ class Users extends Model {
     }
 }
 Users.find(1, {
-    success (user) {
-        console.log(user);
+    success(/*user*/) {
+        //  console.log(user);
     }
 });

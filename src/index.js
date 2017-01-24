@@ -1,5 +1,6 @@
-var axios = require('axios');
-
+'use strict';
+const axios = require('axios');
+/*global module*/
 function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
@@ -16,7 +17,7 @@ export class Model {
 
     setAttributes(attributes, withSetters) {
         withSetters = withSetters || false;
-        if(withSetters) {
+        if (withSetters) {
             return this.setAttributesWithSetters(attributes);
         } else {
             return this.setAttributesWithoutSetters(attributes);
@@ -24,7 +25,7 @@ export class Model {
     }
 
     setAttributesWithSetters(attributes) {
-        for(var key in attributes) {
+        for (let key in attributes) {
             this.set(key, attributes[key]);
         }
         return this;
@@ -48,7 +49,7 @@ export class Model {
     }
 
     has(method) {
-        return this[method] !== undefined
+        return this[method] !== undefined;
     }
 
     getQualifiedRelation(key) {
@@ -84,7 +85,7 @@ export class Model {
         return this[this.getQualifiedGetter(key)](this.getAttribute(key));
     }
 
-    fromSetter(key) {
+    fromSetter(key, value) {
         return this[this.getQualifiedSetter(key)](value);
     }
 
@@ -132,7 +133,7 @@ export class Model {
     }
 
     _getIndexedUrl(id) {
-        var id = id || this.get(this.primaryKey);
+        id = id || this.get(this.primaryKey);
         return this._getUnindexedUrl() + '/' + id;
     }
 
@@ -148,21 +149,21 @@ export class Model {
         this.destroy(this.getPrimaryKey(), options);
     }
 
-    hasMany(relatedClass, options) {
-        var url = (new relatedClass).getUrl(),
-            id = options.id || -1;
-        options.className = relatedClass;
+    hasMany(RelatedClass, options) {
+        const url = (new RelatedClass()).getUrl();
+        const id = options.id || -1;
+        options.className = RelatedClass;
         if (id > -1) {
-            relatedClass.find(id, options);
+            RelatedClass.find(id, options);
         } else {
             this.constructor._fetch(this.constructor._getUnindexedUrl([this.getPrimaryKey(), url]), 'GET', options);
         }
     }
 
-    hasOne(relatedClass, foreignKey, options) {
-        var relatedInstance = (new relatedClass),
-            id = this.get(foreignKey);
-        options.className = relatedClass;
+    hasOne(RelatedClass, foreignKey, options) {
+        const relatedInstance = (new RelatedClass());
+        const id = this.get(foreignKey);
+        options.className = RelatedClass;
         relatedInstance.constructor._fetch(relatedInstance.constructor._getUnindexedUrl(id), 'GET', options);
     }
 
@@ -171,19 +172,19 @@ export class Model {
         if (options.constructor === Array) {
             options = options.join('/');
         }
-        return this.getBaseUrl() + '/' + (new this).getUrl() + '/' + options;
+        return this.getBaseUrl() + '/' + (new this()).getUrl() + '/' + options;
     }
 
     static castFromArray(attributes) {
-        var results = [];
-        for(var index in attributes) {
+        const results = [];
+        for (let index in attributes) {
             results.push(this.cast(attributes[index]));
         }
         return results;
     }
 
     static cast(attributes) {
-        if(attributes.constructor === Array) {
+        if (attributes.constructor === Array) {
             return this.castFromArray(attributes);
         }
         return new this(attributes);
@@ -206,21 +207,21 @@ export class Model {
     }
 
     static _extractOptions(options) {
-        var callbacks = options || {};
-        for (var option in this.options) {
-            callbacks[option] = options[option] || this.options[option]
+        const callbacks = options || {};
+        for (let option in this.options) {
+            callbacks[option] = options[option] || this.options[option];
         }
         return callbacks;
     }
 
     static _fetch(url, type, options) {
-        var className = options.className;
+        const className = options.className;
         axios.request({
             url: url,
             data: options.data,
             method: type,
             baseURL: this.getBaseUrl()
-        }).then(function (response) {
+        }).then(function(response) {
             options.success(className.cast(response.data));
         })
         .catch(options.error);
@@ -229,11 +230,11 @@ export class Model {
     static get options() {
         return {
             success: () => {},
-            error: (error) => console.log("Error occured during request" + error),
+            error: () => {},
             beforeSend: () => {},
             className: this,
             datas: {},
-        }
+        };
     }
 
     static get primaryKey() {
