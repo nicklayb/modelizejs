@@ -1,6 +1,6 @@
 'use strict';
 const axios = require('axios');
-/*global module*/
+/*global module, Promise*/
 function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
@@ -151,15 +151,25 @@ export class Model {
     }
 
     update(options) {
-        this._fetch(this._getUnindexedUrl(), 'PUT', this._extractOptions(options));
+        options = options || {};
+        options.data = this.attributes;
+        return this.constructor._fetch(this.constructor._getUnindexedUrl(), 'PUT', this.constructor._extractOptions(options));
     }
 
     store(options) {
-        this._fetch(this._getUnindexedUrl(), 'POST', this._extractOptions(options));
+        options = options || {};
+        options.data = this.attributes;
+        return new Promise((resolve, reject) => {
+            this.constructor._fetch(this.constructor._getUnindexedUrl(), 'POST', this.constructor._extractOptions(options))
+                .then((object) => {
+                    this.setAttributes(object);
+                    resolve(this);
+                }).catch((err) => reject(err));
+        });
     }
 
     delete(options) {
-        this.destroy(this.getPrimaryKey(), options);
+        return this.constructor.destroy(this.getPrimaryKey(), options);
     }
 
     hasMany(RelatedClass, options) {
@@ -208,11 +218,11 @@ export class Model {
     }
 
     static destroy(id, options) {
-        this._fetch(this._getUnindexedUrl(id), 'DELETE', this._extractOptions(options));
+        return this._fetch(this._getUnindexedUrl(id), 'DELETE', this._extractOptions(options));
     }
 
     static get(id, options) {
-        this._fetch(this._getUnindexedUrl(id), 'GET', this._extractOptions(options));
+        return this._fetch(this._getUnindexedUrl(id), 'GET', this._extractOptions(options));
     }
 
     static find(id, options) {
@@ -220,10 +230,11 @@ export class Model {
     }
 
     static all(options) {
-        this._fetch(this._getUnindexedUrl(), 'GET', this._extractOptions(options));
+        return this._fetch(this._getUnindexedUrl(), 'GET', this._extractOptions(options));
     }
 
     static _extractOptions(options) {
+        options = options || {};
         const callbacks = options || {};
         for (let option in this.options) {
             callbacks[option] = options[option] || this.options[option];
@@ -233,22 +244,19 @@ export class Model {
 
     static _fetch(url, type, options) {
         const className = options.className;
-        axios.request({
-            url: url,
-            data: options.data,
-            method: type,
-            baseURL: this.getBaseUrl()
-        }).then(function(response) {
-            options.success(className.cast(response.data));
-        })
-        .catch(options.error);
+        return new Promise((resolve, reject) => {
+            axios.request({
+                url: url,
+                data: options.data,
+                method: type,
+                baseURL: this.getBaseUrl()
+            }).then((response) => resolve(className.cast(response.data)))
+                .catch((err) => reject(err));
+        });
     }
 
     static get options() {
         return {
-            success: () => {},
-            error: () => {},
-            beforeSend: () => {},
             className: this,
             datas: {},
         };
