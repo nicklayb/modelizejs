@@ -220,7 +220,7 @@ export class Model {
     }
 
     static all(options) {
-        this._fetch(this.getUnindexedUrl(), 'GET', this._extractOptions(options));
+        this._fetch(this._getUnindexedUrl(), 'GET', this._extractOptions(options));
     }
 
     static _extractOptions(options) {
