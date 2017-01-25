@@ -155,7 +155,7 @@ export class Model {
     }
 
     store(options) {
-        this._fetch(this._getIndexedUrl(), 'POST', this._extractOptions(options));
+        this._fetch(this._getUnindexedUrl(), 'POST', this._extractOptions(options));
     }
 
     delete(options) {
