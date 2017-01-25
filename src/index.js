@@ -11,8 +11,6 @@ export class Model {
         this.url = '';
         this.primaryKey = this.constructor.primaryKey;
         this.dates = [];
-        this.ints = [];
-        this.floats = [];
         this.DateConstructor = Date;
         withSetters = (withSetters !== undefined) ? withSetters : true;
         attributes = attributes || {};
@@ -219,6 +217,10 @@ export class Model {
 
     static find(id, options) {
         return this.get(id, options);
+    }
+
+    static all(options) {
+        this._fetch(this.getUnindexedUrl(), 'GET', this._extractOptions(options));
     }
 
     static _extractOptions(options) {
