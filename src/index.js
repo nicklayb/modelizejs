@@ -10,6 +10,10 @@ export class Model {
         this.attributes = {};
         this.url = '';
         this.primaryKey = this.constructor.primaryKey;
+        this.dates = [];
+        this.ints = [];
+        this.floats = [];
+        this.DateConstructor = Date;
         withSetters = (withSetters !== undefined) ? withSetters : true;
         attributes = attributes || {};
         this.setAttributes(attributes, withSetters);
@@ -46,6 +50,10 @@ export class Model {
 
     hasSetter(key) {
         return this.has(this.getQualifiedSetter(key));
+    }
+
+    isDate(key) {
+        return this.dates.includes(key);
     }
 
     has(method) {
@@ -93,6 +101,10 @@ export class Model {
         return this[this.getQualifiedRelation(key)](this.constructor._extractOptions(options));
     }
 
+    fromDate(key) {
+        return new this.DateConstructor(this.getAttribute[key]);
+    }
+
     setUrl(url) {
         this.url = url;
     }
@@ -119,6 +131,9 @@ export class Model {
         }
         if (this.hasGetter(key)) {
             return this.fromGetter(key);
+        }
+        if (this.isDate(key)) {
+            return this.fromDate(key);
         }
         return this.getAttribute(key);
     }
