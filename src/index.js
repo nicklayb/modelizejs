@@ -12,6 +12,7 @@ export class Model {
         this.primaryKey = this.constructor.primaryKey;
         this.dates = [];
         this.DateConstructor = Date;
+        this.store = false;
         withSetters = (withSetters !== undefined) ? withSetters : true;
         attributes = attributes || {};
         this.setAttributes(attributes, withSetters);
@@ -30,6 +31,11 @@ export class Model {
         for (let key in attributes) {
             this.set(key, attributes[key]);
         }
+        return this;
+    }
+
+    setStored() {
+        this.stored = true;
         return this;
     }
 
@@ -147,22 +153,20 @@ export class Model {
 
     _getIndexedUrl(id) {
         id = id || this.get(this.primaryKey);
-        return this._getUnindexedUrl() + '/' + id;
+        return this.constructor._getUnindexedUrl() + '/' + id;
     }
 
-    update(options) {
+    save(options) {
         options = options || {};
-        options.data = this.attributes;
-        return this.constructor._fetch(this.constructor._getUnindexedUrl(), 'PUT', this.constructor._extractOptions(options));
-    }
-
-    store(options) {
-        options = options || {};
-        options.data = this.attributes;
+        options.data = this.getAttributes();
+        options = this.constructor._extractOptions(options);
+        let method = (this.isStored) ? 'PUT' : 'POST';
+        let url = (this.isStored) ? this._getIndexedUrl() : this.constructor._getUnindexedUrl();
         return new Promise((resolve, reject) => {
-            this.constructor._fetch(this.constructor._getUnindexedUrl(), 'POST', this.constructor._extractOptions(options))
+            this.constructor._fetch(url, method, options)
                 .then((object) => {
-                    this.setAttributes(object);
+                    this.setAttributes(object.getAttributes());
+                    this.setStored();
                     resolve(this);
                 }).catch((err) => reject(err));
         });
@@ -170,6 +174,10 @@ export class Model {
 
     delete(options) {
         return this.constructor.destroy(this.getPrimaryKey(), options);
+    }
+
+    get isStored() {
+        return this.stored == true;
     }
 
     hasMany(RelatedClass, options) {
@@ -210,7 +218,7 @@ export class Model {
         if (attributes.constructor === Array) {
             return this.castFromArray(attributes);
         }
-        return new this(attributes);
+        return (new this(attributes)).setStored();
     }
 
     static getBaseUrl() {
