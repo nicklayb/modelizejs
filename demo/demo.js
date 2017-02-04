@@ -24,8 +24,6 @@ class Users extends Model {
         return this.hasMany(Posts, callbacks);
     }
 }
-Users.find(1, {
-    success(/*user*/) {
-        //  console.log(user);
-    }
+Users.find(1).then((/*user*/) => {
+    //  console.log(user);
 });

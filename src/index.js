@@ -1,25 +1,21 @@
 'use strict';
 const axios = require('axios');
-/*global module, Promise*/
 function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 export class Model {
-    constructor(attributes, withSetters) {
+    constructor(attributes = {}, withSetters = true) {
         this.attributes = {};
         this.url = '';
         this.primaryKey = this.constructor.primaryKey;
         this.dates = [];
         this.DateConstructor = Date;
         this.store = false;
-        withSetters = (withSetters !== undefined) ? withSetters : true;
-        attributes = attributes || {};
         this.setAttributes(attributes, withSetters);
     }
 
-    setAttributes(attributes, withSetters) {
-        withSetters = withSetters || false;
+    setAttributes(attributes, withSetters = false) {
         if (withSetters) {
             return this.setAttributesWithSetters(attributes);
         } else {
@@ -102,7 +98,7 @@ export class Model {
     }
 
     fromRelation(key, options) {
-        return this[this.getQualifiedRelation(key)](this.constructor._extractOptions(options));
+        return this[this.getQualifiedRelation(key)](this.constructor.extractOptions(options));
     }
 
     fromDate(key) {
@@ -111,6 +107,7 @@ export class Model {
 
     setUrl(url) {
         this.url = url;
+        return this;
     }
 
     getUrl() {
@@ -143,27 +140,23 @@ export class Model {
     }
 
     set(key, value) {
-        if (this.hasSetter(key)) {
-            this.setAttribute(key, this.fromSetter(key, value));
-        } else {
-            this.setAttribute(key, value);
-        }
-        return this;
+        value = (this.hasSetter(key)) ? this.fromSetter(key, value) : value;
+        return this.setAttribute(key, value);
     }
 
-    _getIndexedUrl(id) {
-        id = id || this.get(this.primaryKey);
-        return this.constructor._getUnindexedUrl() + '/' + id;
+    getSaveMethod() {
+        return (this.isStored) ? 'PUT' : 'POST';
     }
 
-    save(options) {
-        options = options || {};
+    getSaveArguments() {
+        return (this.isStored) ? [this.get(this.primaryKey)] : [];
+    }
+
+    save(options = {}) {
         options.data = this.getAttributes();
-        options = this.constructor._extractOptions(options);
-        let method = (this.isStored) ? 'PUT' : 'POST';
-        let url = (this.isStored) ? this._getIndexedUrl() : this.constructor._getUnindexedUrl();
+        let url = this.constructor.getFullUrl(this.getSaveArguments());
         return new Promise((resolve, reject) => {
-            this.constructor._fetch(url, method, options)
+            this.constructor.fetch(url, this.getSaveMethod(), this.constructor.extractOptions(options))
                 .then((object) => {
                     this.setAttributes(object.getAttributes());
                     this.setStored();
@@ -185,25 +178,50 @@ export class Model {
         const id = options.id || -1;
         options.className = RelatedClass;
         if (id > -1) {
-            RelatedClass.find(id, options);
-        } else {
-            this.constructor._fetch(this.constructor._getUnindexedUrl([this.getPrimaryKey(), url]), 'GET', options);
+            return RelatedClass.find(id, options);
         }
+        return this.constructor.fetch(this.constructor.getFullUrl([this.getPrimaryKey(), url]), 'GET', options);
     }
 
     hasOne(RelatedClass, foreignKey, options) {
         const relatedInstance = (new RelatedClass());
         const id = this.get(foreignKey);
         options.className = RelatedClass;
-        relatedInstance.constructor._fetch(relatedInstance.constructor._getUnindexedUrl(id), 'GET', options);
+        return relatedInstance.constructor.fetch(relatedInstance.constructor.getFullUrl(id), 'GET', options);
     }
 
-    static _getUnindexedUrl(options) {
-        options = options || '';
-        if (options.constructor === Array) {
-            options = options.join('/');
+    static hasBaseUrl() {
+        return this.getBaseUrl().length > 0;
+    }
+
+    static getFullUrlBase() {
+        let url = [];
+        let classUrl = (new this()).getUrl();
+        if (this.hasBaseUrl()) {
+            url.push(this.getBaseUrl());
         }
-        return this.getBaseUrl() + '/' + (new this()).getUrl() + '/' + options;
+        if (classUrl.length > 0) {
+            url.push(classUrl);
+        }
+        return url;
+    }
+
+    static getFullUrl(options) {
+        let url = this.getFullUrlBase();
+        if (options !== undefined) {
+            switch (options.constructor) {
+                case Array:
+                    url.push(...options);
+                    break;
+                case String:
+                case Number:
+                    url.push(options);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return url.join('/');
     }
 
     static castFromArray(attributes) {
@@ -226,11 +244,11 @@ export class Model {
     }
 
     static destroy(id, options) {
-        return this._fetch(this._getUnindexedUrl(id), 'DELETE', this._extractOptions(options));
+        return this.fetch(this.getFullUrl(id), 'DELETE', this.extractOptions(options));
     }
 
     static get(id, options) {
-        return this._fetch(this._getUnindexedUrl(id), 'GET', this._extractOptions(options));
+        return this.fetch(this.getFullUrl(id), 'GET', this.extractOptions(options));
     }
 
     static find(id, options) {
@@ -238,27 +256,25 @@ export class Model {
     }
 
     static all(options) {
-        return this._fetch(this._getUnindexedUrl(), 'GET', this._extractOptions(options));
+        return this.fetch(this.getFullUrl(), 'GET', this.extractOptions(options));
     }
 
-    static _extractOptions(options) {
-        options = options || {};
-        const callbacks = options || {};
+    static extractOptions(options = {}) {
+        const callbacks = options;
         for (let option in this.options) {
             callbacks[option] = options[option] || this.options[option];
         }
         return callbacks;
     }
 
-    static _fetch(url, type, options) {
-        const className = options.className;
+    static fetch(url, type, options) {
         return new Promise((resolve, reject) => {
             axios.request({
                 url: url,
                 data: options.data,
                 method: type,
                 baseURL: this.getBaseUrl()
-            }).then((response) => resolve(className.cast(response.data)))
+            }).then((response) => resolve(options.className.cast(response.data)))
                 .catch((err) => reject(err));
         });
     }

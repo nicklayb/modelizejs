@@ -54,44 +54,40 @@ class Posts extends Model {
     }
 }
 
-Users.find(1, {
-    success(user) {
-        console.log(user);
-        /*
-            Will return an object looking like this :
-            Users {
-              attributes:
-               { id: 1,
-                 name: 'Leanne Graham',
-                 username: 'Bret',
-                 email: 'Sincere@april.biz',
-                 address:
-                  { street: 'Kulas Light',
-                    suite: 'Apt. 556',
-                    city: 'Gwenborough',
-                    zipcode: '92998-3874',
-                    geo: [Object] },
-                 phone: '1-770-736-8031 x56442',
-                 website: 'hildegard.org',
-                 company:
-                  { name: 'Romaguera-Crona',
-                    catchPhrase: 'Multi-layered client-server neural-net',
-                    bs: 'harness real-time e-markets' } },
-              url: 'users',
-              primaryKey: 'id' }
-         */
-         console.log(user.get('fullname')); //  Leanne Graham (Bret)
+Users.find(1).then((user) => {
+    console.log(user);
+    /*
+        Will return an object looking like this :
+        Users {
+          attributes:
+           { id: 1,
+             name: 'Leanne Graham',
+             username: 'Bret',
+             email: 'Sincere@april.biz',
+             address:
+              { street: 'Kulas Light',
+                suite: 'Apt. 556',
+                city: 'Gwenborough',
+                zipcode: '92998-3874',
+                geo: [Object] },
+             phone: '1-770-736-8031 x56442',
+             website: 'hildegard.org',
+             company:
+              { name: 'Romaguera-Crona',
+                catchPhrase: 'Multi-layered client-server neural-net',
+                bs: 'harness real-time e-markets' } },
+          url: 'users',
+          primaryKey: 'id' }
+     */
+     console.log(user.get('fullname')); //  Leanne Graham (Bret)
 
-        user.get('posts', {
-            success(posts) {
-                console.log(posts);
-                posts[0].get('user', {
-                    success(user) {
-                        console.log(user); //   Returns the same user as above
-                    }
-                })
-            }
-        })
+    user.get('posts').then((posts) => {
+        console.log(posts);
+        posts[0].get('user').then((user) => {
+            console.log(user); //   Returns the same user as above
+        });
+    });
+});
         /*
             Will return an array of Posts objects related to the selected user (1)
             [ Posts {
@@ -115,8 +111,6 @@ Users.find(1, {
             primaryKey: 'id' } ]
 
          */
-    }
-})
 
 ```
 

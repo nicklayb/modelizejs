@@ -12,10 +12,9 @@
     },
     "extends": "eslint:recommended",
     "globals": {
-        "lbal": false,
-        "Lbal": false,
-        "Qonga": false,
-        "require": false
+        "Promise": false,
+        "require": false,
+        "module": false
     },
     "root": true,
     "rules": {
