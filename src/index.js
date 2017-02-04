@@ -273,6 +273,7 @@ export class Model {
                 url: url,
                 data: options.datas,
                 method: type,
+                headers: options.headers,
                 baseURL: this.getBaseUrl()
             }).then((response) => resolve(options.className.cast(response.data)))
                 .catch((err) => reject(err));
@@ -283,6 +284,7 @@ export class Model {
         return {
             className: this,
             datas: {},
+            headers: {}
         };
     }
 
