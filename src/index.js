@@ -271,7 +271,7 @@ export class Model {
         return new Promise((resolve, reject) => {
             axios.request({
                 url: url,
-                data: options.data,
+                data: options.datas,
                 method: type,
                 baseURL: this.getBaseUrl()
             }).then((response) => resolve(options.className.cast(response.data)))
