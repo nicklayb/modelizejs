@@ -4,12 +4,13 @@ function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export class Model {
+class Model {
     constructor(attributes = {}, withSetters = true) {
         this.attributes = {};
         this.url = '';
         this.primaryKey = this.constructor.primaryKey;
         this.dates = [];
+        this.casts = {};
         this.DateConstructor = Date;
         this.store = false;
         this.setAttributes(attributes, withSetters);
@@ -42,6 +43,10 @@ export class Model {
 
     hasGetter(key) {
         return this.has(this.getQualifiedGetter(key));
+    }
+
+    hasCasts(key) {
+        return this.casts[key] !== undefined;
     }
 
     hasRelation(key) {
@@ -101,6 +106,11 @@ export class Model {
         return this[this.getQualifiedRelation(key)](this.constructor.extractOptions(options));
     }
 
+    fromCast(key) {
+        let Cast = this.casts[key];
+        return new Cast(this.getAttribute(key));
+    }
+
     fromDate(key) {
         return new this.DateConstructor(this.getAttribute[key]);
     }
@@ -129,6 +139,9 @@ export class Model {
     get(key, options) {
         if (this.hasRelation(key)) {
             return this.fromRelation(key, options);
+        }
+        if (this.hasCasts(key)) {
+            return this.fromCast(key);
         }
         if (this.hasGetter(key)) {
             return this.fromGetter(key);
@@ -271,7 +284,7 @@ export class Model {
         return new Promise((resolve, reject) => {
             axios.request({
                 url: url,
-                data: options.datas,
+                params: options.datas,
                 method: type,
                 headers: options.headers,
                 baseURL: this.getBaseUrl()

@@ -1,4 +1,4 @@
-var Model = require('../index.js');
+var Model = require('../src/index.js');
 
 Model.getBaseUrl = () => {
     return 'https://jsonplaceholder.typicode.com';
