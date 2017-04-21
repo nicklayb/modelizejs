@@ -17,6 +17,7 @@ class Model {
     }
 
     setAttributes(attributes, withSetters = false) {
+        attributes = this.bindCastables(attributes);
         if (withSetters) {
             return this.setAttributesWithSetters(attributes);
         } else {
@@ -39,6 +40,32 @@ class Model {
     setAttributesWithoutSetters(attributes) {
         this.attributes = attributes;
         return this;
+    }
+
+    bindCastables(attributes) {
+        const castables = this.constructor.castables();
+        let casted = {};
+        for (const key in attributes) {
+            const castable = castables[key];
+            const attribute = attributes[key];
+            casted[key] = attribute;
+            if (castable && attribute) {
+                if (attributes.constructor === 'Array') {
+                    casted[key] = this.castArray(attribute, castable);
+                } else {
+                    casted[key] = this.castItem(attribute, castable);
+                }
+            }
+        }
+        return casted;
+    }
+
+    castArray(items, Cast) {
+        return items.map(item => this.castItem(item, Cast));
+    }
+
+    castItem(item, Cast) {
+        return new Cast(item);
     }
 
     hasGetter(key) {
@@ -201,6 +228,10 @@ class Model {
         const id = this.get(foreignKey);
         options.className = RelatedClass;
         return relatedInstance.constructor.fetch(relatedInstance.constructor.getFullUrl(id), 'GET', options);
+    }
+
+    static castables() {
+        return {};
     }
 
     static hasBaseUrl() {

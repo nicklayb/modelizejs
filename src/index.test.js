@@ -2,6 +2,17 @@ import { expect } from 'firenpm/mochaccino';
 import Model from '../lib';
 /*global describe, it*/
 const url = '/users';
+class Role extends Model {
+    constructor(attributes) {
+        super(attributes);
+        this.setUrl(url);
+    }
+
+    getConcatedAttribute() {
+        return this.get('name') + this.get('level');
+    }
+}
+
 class User extends Model {
     constructor(attributes) {
         super(attributes);
@@ -12,6 +23,12 @@ class User extends Model {
     getFullnameAttribute() {
         return this.get('firstname') + ' ' + this.get('lastname');
     }
+
+    static castables() {
+        return {
+            role: Role
+        };
+    }
 }
 describe('Model', () => {
     const attributes = {
@@ -20,6 +37,10 @@ describe('Model', () => {
         'lastname': 'Doe',
         'email': 'johndoe@mock.com',
         'birthdate': '1993-01-10',
+        'role': {
+            name: 'admin',
+            level: 100
+        }
     };
     let user = new User(attributes);
 
@@ -51,6 +72,14 @@ describe('Model', () => {
         };
         user.set('id', NEW_ID);
         expect(user.get('id')).toEqual(VALUE_TO_ADD + NEW_ID);
+    });
+
+    it('should cast role as Role', () => {
+        expect(user.get('role').constructor).toBe(Role);
+    });
+
+    it('should gives the concatenated value of the role attributes', () => {
+        expect(user.get('role').get('concated')).toEqual('admin100');
     });
 
     it('should set stored value to true', () => {

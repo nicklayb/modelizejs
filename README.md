@@ -114,6 +114,20 @@ Users.find(1).then((user) => {
 
 ```
 
+### Casting related
+
+Sometimes you wish an attribute to be called as a specific class. If, for instance, our User model would come with an array of related posts, you could override the static method `castables()` to return an object within a attribute:class format.
+
+```
+castables() {
+    return {
+        posts: Posts
+    };
+}
+```
+
+When you will access the `posts` property with the get method, it will return you an array of `Posts` instead of an array of `Object`.
+
 ### Creating relation
 
 Add a method to your class called '{relation}Related', like 'commentsRelated' or 'userRelated'
