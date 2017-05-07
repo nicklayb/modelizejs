@@ -50,7 +50,7 @@ class Model {
             const attribute = attributes[key];
             casted[key] = attribute;
             if (castable && attribute) {
-                if (attributes.constructor === 'Array') {
+                if (attribute.constructor === Array) {
                     casted[key] = this.castArray(attribute, castable);
                 } else {
                     casted[key] = this.castItem(attribute, castable);

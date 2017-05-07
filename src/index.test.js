@@ -2,6 +2,12 @@ import { expect } from 'firenpm/mochaccino';
 import Model from '../lib';
 /*global describe, it*/
 const url = '/users';
+class Post extends Model {
+    constructor(attributes) {
+        super(attributes);
+        this.setUrl(url);
+    }
+}
 class Role extends Model {
     constructor(attributes) {
         super(attributes);
@@ -26,7 +32,8 @@ class User extends Model {
 
     static castables() {
         return {
-            role: Role
+            role: Role,
+            posts: Post
         };
     }
 }
@@ -40,7 +47,11 @@ describe('Model', () => {
         'role': {
             name: 'admin',
             level: 100
-        }
+        },
+        'posts': [
+            { body: 'First post' },
+            { body: 'Second post' },
+        ]
     };
     let user = new User(attributes);
 
@@ -76,6 +87,14 @@ describe('Model', () => {
 
     it('should cast role as Role', () => {
         expect(user.get('role').constructor).toBe(Role);
+    });
+
+    it('should cast all posts as Post array', () => {
+        expect(user.get('posts').constructor).toBe(Array);
+    });
+
+    it('should cast posts as Post', () => {
+        expect(user.get('posts')[0].constructor).toBe(Post);
     });
 
     it('should gives the concatenated value of the role attributes', () => {
