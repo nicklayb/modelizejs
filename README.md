@@ -1,6 +1,8 @@
 # modelizejs
 ###### By Nicolas Boisvert :: nicklay@me.com
 
+[![Build Status](https://travis-ci.org/nicklayb/modelizejs.svg?branch=master)](https://travis-ci.org/nicklayb/modelizejs)
+
 ### Javascript model library Eloquent-like oriented using Axios for fetch request
 
 ##### Purposes
