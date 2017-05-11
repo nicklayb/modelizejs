@@ -5,13 +5,13 @@ const url = '/users';
 class Post extends Model {
     constructor(attributes) {
         super(attributes);
-        this.setUrl(url);
+        this.setUrl('/posts');
     }
 }
 class Role extends Model {
     constructor(attributes) {
         super(attributes);
-        this.setUrl(url);
+        this.setUrl('/roles');
     }
 
     getConcatedAttribute() {
