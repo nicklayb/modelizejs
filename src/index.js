@@ -319,9 +319,13 @@ class Model {
                 method: type,
                 headers: options.headers,
                 baseURL: this.getBaseUrl()
-            }).then((response) => resolve(options.className.cast(response.data)))
+            }).then((response) => resolve(options.className.cast(this.getDataFromResponse(response))))
                 .catch((err) => reject(err));
         });
+    }
+
+    static getDataFromResponse(response) {
+        return response.data;
     }
 
     static get options() {
