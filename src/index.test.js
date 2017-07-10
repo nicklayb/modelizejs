@@ -105,4 +105,15 @@ describe('Model', () => {
         user.setStored();
         expect(user.isStored).toEqual(true);
     });
+
+    it('should merge options with default options', () => {
+        const OPTIONS = {
+            datas: {
+                firstName: 'John',
+                lastName: 'Doe'
+            }
+        };
+        const EXPECTATION = Object.assign({}, User.options, OPTIONS);
+        expect(user.constructor.extractOptions(OPTIONS)).toEqual(EXPECTATION);
+    });
 });

@@ -1,5 +1,6 @@
 'use strict';
 const axios = require('axios');
+
 function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
@@ -32,8 +33,8 @@ class Model {
         return this;
     }
 
-    setStored() {
-        this.stored = true;
+    setStored(value = true) {
+        this.stored = value;
         return this;
     }
 
@@ -73,7 +74,7 @@ class Model {
     }
 
     hasCasts(key) {
-        return this.casts[key] !== undefined;
+        return !!this.casts[key];
     }
 
     hasRelation(key) {
@@ -89,7 +90,7 @@ class Model {
     }
 
     has(method) {
-        return this[method] !== undefined;
+        return !!this[method];
     }
 
     getQualifiedRelation(key) {
@@ -134,7 +135,7 @@ class Model {
     }
 
     fromCast(key) {
-        let Cast = this.casts[key];
+        const Cast = this.casts[key];
         return new Cast(this.getAttribute(key));
     }
 
@@ -194,7 +195,7 @@ class Model {
 
     save(options = {}) {
         options.data = this.getAttributes();
-        let url = this.constructor.getFullUrl(this.getSaveArguments());
+        const url = this.constructor.getFullUrl(this.getSaveArguments());
         return new Promise((resolve, reject) => {
             this.constructor.fetch(url, this.getSaveMethod(), this.constructor.extractOptions(options))
                 .then((object) => {
@@ -210,7 +211,7 @@ class Model {
     }
 
     get isStored() {
-        return this.stored == true;
+        return !!this.stored;
     }
 
     hasMany(RelatedClass, options) {
@@ -234,25 +235,16 @@ class Model {
         return {};
     }
 
-    static hasBaseUrl() {
-        return this.getBaseUrl().length > 0;
-    }
-
     static getFullUrlBase() {
-        let url = [];
-        let classUrl = (new this()).getUrl();
-        if (this.hasBaseUrl()) {
-            url.push(this.getBaseUrl());
-        }
-        if (classUrl.length > 0) {
-            url.push(classUrl);
-        }
-        return url;
+        return [
+            this.getBaseUrl(),
+            (this.create().getUrl())
+        ].filter(part => !!part);
     }
 
     static getFullUrl(options) {
         let url = this.getFullUrlBase();
-        if (options !== undefined) {
+        if (options) {
             switch (options.constructor) {
                 case Array:
                     url.push(...options);
@@ -268,19 +260,11 @@ class Model {
         return url.join('/');
     }
 
-    static castFromArray(attributes) {
-        const results = [];
-        for (let index in attributes) {
-            results.push(this.cast(attributes[index]));
-        }
-        return results;
-    }
-
     static cast(attributes) {
         if (attributes.constructor === Array) {
-            return this.castFromArray(attributes);
+            return attributes.map(this.cast);
         }
-        return (new this(attributes)).setStored();
+        return this.create().setStored();
     }
 
     static getBaseUrl() {
@@ -304,11 +288,7 @@ class Model {
     }
 
     static extractOptions(options = {}) {
-        const callbacks = options;
-        for (let option in this.options) {
-            callbacks[option] = options[option] || this.options[option];
-        }
-        return callbacks;
+        return Object.assign(this.options, options);
     }
 
     static fetch(url, type, options) {
@@ -338,6 +318,10 @@ class Model {
 
     static get primaryKey() {
         return 'id';
+    }
+
+    static create(attributes = {}) {
+        return new this(attributes);
     }
 }
 module.exports = Model;
