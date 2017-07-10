@@ -110,6 +110,14 @@ describe('Model', () => {
         expect(user.isStored).toEqual(true);
     });
 
+    it('should have the firstName attribute', () => {
+        expect(user.has('firstname')).toEqual(true);
+    });
+
+    it('should not have an age attribute', () => {
+        expect(user.has('age')).toEqual(false);
+    });
+
     it('should merge options with default options', () => {
         const OPTIONS = {
             datas: {

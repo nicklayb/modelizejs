@@ -70,7 +70,7 @@ class Model {
     }
 
     hasGetter(key) {
-        return this.has(this.getQualifiedGetter(key));
+        return this.hasMethod(this.getQualifiedGetter(key));
     }
 
     hasCasts(key) {
@@ -78,18 +78,18 @@ class Model {
     }
 
     hasRelation(key) {
-        return this.has(this.getQualifiedRelation(key));
+        return this.hasMethod(this.getQualifiedRelation(key));
     }
 
     hasSetter(key) {
-        return this.has(this.getQualifiedSetter(key));
+        return this.hasMethod(this.getQualifiedSetter(key));
     }
 
     isDate(key) {
         return this.dates.includes(key);
     }
 
-    has(method) {
+    hasMethod(method) {
         return !!this[method];
     }
 
@@ -162,6 +162,10 @@ class Model {
         }
 
         return this.get(key);
+    }
+
+    has(key) {
+        return !!this.get(key);
     }
 
     get(key, options) {
