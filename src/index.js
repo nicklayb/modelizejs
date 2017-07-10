@@ -66,7 +66,7 @@ class Model {
     }
 
     castItem(item, Cast) {
-        return new Cast(item);
+        return Cast.create(item);
     }
 
     hasGetter(key) {
@@ -264,7 +264,7 @@ class Model {
         if (attributes.constructor === Array) {
             return attributes.map(this.cast.bind(this));
         }
-        return this.create().setStored();
+        return this.create(attributes).setStored();
     }
 
     static getBaseUrl() {

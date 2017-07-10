@@ -89,6 +89,10 @@ describe('Model', () => {
         expect(user.get('role').constructor).toBe(Role);
     });
 
+    it('should cast role as Role and has the same method', () => {
+        expect(user.get('role').get.constructor).toBe(Function);
+    });
+
     it('should cast all posts as Post array', () => {
         expect(user.get('posts').constructor).toBe(Array);
     });
