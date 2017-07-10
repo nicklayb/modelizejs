@@ -262,7 +262,7 @@ class Model {
 
     static cast(attributes) {
         if (attributes.constructor === Array) {
-            return attributes.map(this.cast);
+            return attributes.map(this.cast.bind(this));
         }
         return this.create().setStored();
     }
