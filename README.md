@@ -11,6 +11,8 @@ It helps you fetch object from an API using Laravel Eloquent-like model extensio
 
 Feel to make pull request and make suggestions
 
+## Usage
+
 ### Extending
 
 You can have look in *Demo* for more information. This example will use the JSONPlaceholder API for testing.
@@ -115,6 +117,58 @@ Users.find(1).then((user) => {
          */
 
 ```
+
+### Fetch a model
+
+To fetch a model, simply call one of those static methods :
+
+- `find(id)` / `get(id)`
+- `all()`
+
+Example
+```js
+Users.get(1).then(user => {
+    // user is a User model instance
+});
+Users.find(1).then(user => {
+    // user is a User model instance
+});
+Users.all().then(users => {
+    // users is an array of User model instances
+});
+```
+
+### Saving models
+
+#### New instance
+
+When you create a new model with your attributes, you can call `save()` to do a POST request to the model url.
+
+```js
+let user = new Users({
+    firstname: 'John',
+    lastname: 'Doe',
+    email: 'jdoe@email.com'
+});
+user.save();
+```
+
+If you have an existing attributes object and you want to persist it in the database, simply do the above and call `setStored()` before the `save()`. It'll do a PUT request to `/users/{id}` instead
+
+#### Update instance
+
+If you obtained an instance by a get or a find. Calling the `.save()` method will perform a PUT request to `/users/{id}` to update it.
+
+```js
+Users.get(1).then(user => {
+    user.set('firstname', 'Roberto');
+    user.save();
+});
+```
+
+If you want to perform an insertion instead, call `setStored(false)` before your `save()`.
+
+## More
 
 ### Casting related
 

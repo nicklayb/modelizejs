@@ -198,7 +198,7 @@ class Model {
     }
 
     save(options = {}) {
-        options.data = this.getAttributes();
+        options.datas = this.getAttributes();
         const url = this.constructor.getFullUrl(this.getSaveArguments());
         return new Promise((resolve, reject) => {
             this.constructor.fetch(url, this.getSaveMethod(), this.constructor.extractOptions(options))
